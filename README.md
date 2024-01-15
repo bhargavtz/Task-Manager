@@ -1,5 +1,4 @@
 
-```markdown
 # Task Manager
 
 A simple task manager web application implemented using HTML, CSS, and JavaScript.
