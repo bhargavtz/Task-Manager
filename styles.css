@@ -80,12 +80,12 @@ button {
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.3s;
-  }
-  
-  button:hover {
+}
+
+button:hover {
     background-color: #4253c5;
     transform: scale(1.05);
-  }
+}
 
 .task {
     border: 1px solid #ddd;
@@ -102,7 +102,7 @@ button {
     padding: 0;
     transform: scaleY(0);
     transition: opacity 0.3s, height 0.3s, margin 0.3s, padding 0.3s, transform 0.3s;
-  }
+}
 
 .completed {
     background-color: #e0f7fa;
@@ -134,8 +134,37 @@ header h1 {
     margin: 0;
 }
 
-p {
-    text-align: center;
+h2 {
+    font-size: 17px;
+    font-style: normal;
+    border: #000000;
+    text-transform: uppercase;
+    font-weight: 800;
+    letter-spacing: 4px;
+    position: absolute;
+    top: 60%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 5px;
+    background: linear-gradient(45deg, #0a062e,#7303c0, #ec38bc, #b23fbe);
+    background-size: cover;
+    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text;
+    animation: Made 5s infinite;
+}
+
+@keyframes Made {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 .notification {
@@ -149,24 +178,24 @@ p {
     border-radius: 4px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     z-index: 999;
-  }
-  
+}
+
 
 /* Media Queries */
 @media screen and (max-width: 600px) {
-  main {
-    padding: 10px;
-  }
+    main {
+        padding: 10px;
+    }
 
-  .task {
-    padding: 10px;
-  }
+    .task {
+        padding: 10px;
+    }
 
-  input,
-  textarea,
-  button {
-    font-size: 14px;
-  }
+    input,
+    textarea,
+    button {
+        font-size: 14px;
+    }
 }
 
 
