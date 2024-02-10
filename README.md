@@ -47,6 +47,8 @@ Make sure you have Git installed on your local machine.
 
 - Icons used in this project are provided by [boxicons](https://boxicons.com).
 
+- user @hetmardiya
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
