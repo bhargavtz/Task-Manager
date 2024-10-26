@@ -1,90 +1,71 @@
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', () => {
     const taskForm = document.getElementById('task-form');
-    const taskTitleInput = document.getElementById('task-title');
-    const taskDescriptionInput = document.getElementById('task-description');
-    const taskList = document.getElementById('task-list');
+    const taskTitle = document.getElementById('task-title');
+    const taskDescription = document.getElementById('task-description');
+    const taskList = document.getElementById('task-list').querySelector('ul');
+    const taskCounter = document.getElementById('task-counter');
 
-    taskForm.addEventListener('submit', function (event) {
-        event.preventDefault();
-        createTask();
+    let tasks = [];
+
+    // Update Task Counter
+    const updateTaskCounter = () => {
+        const totalTasks = tasks.length;
+        const completedTasks = tasks.filter(task => task.completed).length;
+        taskCounter.textContent = `${totalTasks} tasks total, ${completedTasks} completed`;
+    };
+
+    // Render Task List
+    const renderTasks = () => {
+        taskList.innerHTML = '';
+        tasks.forEach((task, index) => {
+            const li = document.createElement('li');
+            li.className = `list-group-item d-flex justify-content-between align-items-center ${task.completed ? 'completed' : ''}`;
+            li.innerHTML = `
+                <div>
+                    <h5>${task.title}</h5>
+                    <p>${task.description}</p>
+                </div>
+                <div>
+                    <button class="btn btn-sm btn-outline-success me-2" onclick="editTask(${index})">Edit</button>
+                    <button class="btn btn-sm btn-outline-info me-2" onclick="toggleTaskCompletion(${index})">${task.completed ? 'Undo' : 'Complete'}</button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteTask(${index})">Delete</button>
+                </div>
+            `;
+            taskList.appendChild(li);
+        });
+        updateTaskCounter();
+    };
+
+    // Add Task
+    taskForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const title = taskTitle.value.trim();
+        const description = taskDescription.value.trim();
+        if (title && description) {
+            tasks.push({ title, description, completed: false });
+            renderTasks();
+            taskTitle.value = '';
+            taskDescription.value = '';
+        }
     });
 
-    function createTask() {
-        const title = taskTitleInput.value.trim();
-        const description = taskDescriptionInput.value.trim();
+    // Edit Task
+    window.editTask = (index) => {
+        const task = tasks[index];
+        taskTitle.value = task.title;
+        taskDescription.value = task.description;
+        deleteTask(index);
+    };
 
-        if (title === '' || description === '') {
-            alert('Please fill out both title and description.');
-            return;
-        }
+    // Toggle Task Completion
+    window.toggleTaskCompletion = (index) => {
+        tasks[index].completed = !tasks[index].completed;
+        renderTasks();
+    };
 
-        const task = new Task(title, description);
-        addTaskToList(task);
-        clearInputFields();
-        displayNotification('Task added successfully!');
-    }
-
-    function addTaskToList(task) {
-        const taskElement = document.createElement('div');
-        taskElement.classList.add('task', task.status === 'complete' ? 'completed' : '');
-
-        taskElement.innerHTML = `
-        <h3>${task.title}</h3>
-        <p>${task.description}</p>
-        <button class="complete-button">${task.status === 'complete' ? 'Incomplete' : 'Complete'}</button>
-        <button class="delete-button">Delete</button>
-    `;
-
-        taskElement.querySelector('.complete-button').addEventListener('click', function () {
-            toggleTaskStatus(taskElement, task);
-        });
-
-        taskElement.querySelector('.delete-button').addEventListener('click', function () {
-            deleteTask(taskElement);
-        });
-
-        taskList.appendChild(taskElement);
-    }
-
-    function toggleTaskStatus(taskElement, task) {
-        task.status = task.status === 'complete' ? 'incomplete' : 'complete';
-        taskElement.classList.toggle('completed');
-        const completeButton = taskElement.querySelector('.complete-button');
-        completeButton.textContent = task.status === 'complete' ? 'Incomplete' : 'Complete';
-    }
-
-    function deleteTask(taskElement) {
-        const confirmation = confirm('Are you sure you want to delete this task?');
-
-        if (confirmation) {
-            taskElement.classList.add('fade-out');
-            setTimeout(() => {
-                taskElement.remove();
-                displayNotification('Task deleted successfully!');
-            }, 300);
-        }
-    }
-
-
-    function clearInputFields() {
-        taskTitleInput.value = '';
-        taskDescriptionInput.value = '';
-    }
-
-    function Task(title, description) {
-        this.title = title;
-        this.description = description;
-        this.status = 'incomplete';
-    }
-
-    function displayNotification(message) {
-        const notification = document.createElement('div');
-        notification.classList.add('notification');
-        notification.textContent = message;
-        document.body.appendChild(notification);
-
-        setTimeout(() => {
-            notification.remove();
-        }, 3000);
-    }
+    // Delete Task
+    window.deleteTask = (index) => {
+        tasks.splice(index, 1);
+        renderTasks();
+    };
 });
