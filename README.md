@@ -84,12 +84,3 @@ task-manager/
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
-```
-
-### Key Changes
-1. **Features Section**: Added new features like editing tasks, task counter, and responsiveness.
-2. **Technologies Used**: Updated to include Bootstrap and Tailwind CSS.
-3. **Screenshots**: Added a section for visual representation (make sure to add actual image files).
-4. **Folder Structure**: Included the structure for easy navigation.
-
-Feel free to modify any sections according to the latest project updates or requirements.
