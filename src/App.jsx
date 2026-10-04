@@ -1,37 +1,21 @@
 import { useEffect, useState } from 'react';
+import { createTask } from './features/tasks/taskModel.js';
+import { createTaskStorage } from './features/tasks/taskStorage.js';
 
-const STORAGE_KEY = 'task-manager:v1';
+const storage = createTaskStorage();
 
 function makeId() {
   if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
   return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
-function loadTasks() {
-  try {
-    const stored = window.localStorage.getItem(STORAGE_KEY);
-    if (!stored) return [];
-    const parsed = JSON.parse(stored);
-    return Array.isArray(parsed)
-      ? parsed.filter((task) => task && typeof task.id === 'string' && typeof task.title === 'string' && typeof task.completed === 'boolean')
-      : [];
-  } catch {
-    return [];
-  }
-}
-
 export default function App() {
   const [title, setTitle] = useState('');
-  const [tasks, setTasks] = useState(loadTasks);
+  const [tasks, setTasks] = useState(() => storage.load());
   const [storageError, setStorageError] = useState(false);
 
   useEffect(() => {
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
-      setStorageError(false);
-    } catch {
-      setStorageError(true);
-    }
+    setStorageError(!storage.save(tasks));
   }, [tasks]);
 
   function addTask(event) {
@@ -40,19 +24,13 @@ export default function App() {
     if (!trimmedTitle) return;
 
     const now = new Date().toISOString();
-    setTasks((current) => [
-      ...current,
-      {
-        id: makeId(),
-        title: trimmedTitle,
-        description: '',
-        priority: 'medium',
-        dueDate: '',
-        completed: false,
-        createdAt: now,
-        updatedAt: now,
-      },
-    ]);
+    let task;
+    try {
+      task = createTask({ title: trimmedTitle }, { id: makeId, now: () => now });
+    } catch {
+      return;
+    }
+    setTasks((current) => [...current, task]);
     setTitle('');
   }
 
