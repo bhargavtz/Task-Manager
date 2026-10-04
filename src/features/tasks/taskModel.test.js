@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createTask, isTask, toggleTask } from './taskModel.js';
+import { createTask, isTaskRecord, toggleTask } from './taskModel.js';
 
 describe('task model', () => {
   it('trims titles and applies safe defaults', () => {
@@ -21,10 +21,24 @@ describe('task model', () => {
 
   it('validates every persisted display field', () => {
     const valid = createTask({ title: 'Valid' }, { id: () => 'task-2' });
-    expect(isTask(valid)).toBe(true);
-    expect(isTask({ ...valid, priority: 'urgent' })).toBe(false);
-    expect(isTask({ ...valid, description: {} })).toBe(false);
-    expect(isTask({ ...valid, dueDate: 'tomorrow' })).toBe(false);
+    expect(isTaskRecord(valid)).toBe(true);
+    expect(isTaskRecord({ ...valid, priority: 'urgent' })).toBe(false);
+    expect(isTaskRecord({ ...valid, description: {} })).toBe(false);
+    expect(isTaskRecord({ ...valid, dueDate: 'tomorrow' })).toBe(false);
+    expect(isTaskRecord({ ...valid, title: {} })).toBe(false);
+    expect(isTaskRecord({ ...valid, completed: 'false' })).toBe(false);
+  });
+
+  it('rejects impossible calendar dates', () => {
+    expect(() => createTask({ title: 'Impossible date', dueDate: '2026-02-30' })).toThrow(/date/i);
+    const valid = createTask({ title: 'Valid date', dueDate: '2026-02-28' }, { id: () => 'date-task' });
+    expect(isTaskRecord(valid)).toBe(true);
+    expect(isTaskRecord({ ...valid, dueDate: '2026-02-30' })).toBe(false);
+  });
+
+  it('requires timestamps in ISO 8601 form', () => {
+    const valid = createTask({ title: 'Timestamp' }, { id: () => 'time-task' });
+    expect(isTaskRecord({ ...valid, updatedAt: 'October 5 2026' })).toBe(false);
   });
 
   it('toggles completion and updates the timestamp immutably', () => {

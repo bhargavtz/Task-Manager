@@ -10,33 +10,44 @@ export function createTask(input, { id = () => globalThis.crypto?.randomUUID?.()
   const priority = input.priority ?? 'medium';
   if (!PRIORITIES.has(priority)) throw new TypeError('Task priority must be low, medium, or high');
   const dueDate = input.dueDate ?? '';
-  if (dueDate && (!DATE_ONLY.test(dueDate) || Number.isNaN(Date.parse(`${dueDate}T00:00:00`)))) {
+  if (dueDate && !isCalendarDate(dueDate)) {
     throw new TypeError('Task due date must be a valid YYYY-MM-DD date');
   }
   const timestamp = now();
   return { id: id(), title, description, priority, dueDate, completed: false, createdAt: timestamp, updatedAt: timestamp };
 }
 
-export function isTask(value) {
+export function validateTasks(value) {
+  return Array.isArray(value) && value.every(isTaskRecord);
+}
+
+export function isTaskRecord(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
   return typeof value.id === 'string' && value.id.trim().length > 0
     && typeof value.title === 'string' && value.title.trim().length > 0 && value.title.length <= 120
     && typeof value.description === 'string'
     && PRIORITIES.has(value.priority)
-    && (value.dueDate === '' || (typeof value.dueDate === 'string' && DATE_ONLY.test(value.dueDate) && !Number.isNaN(Date.parse(`${value.dueDate}T00:00:00`))))
+    && (value.dueDate === '' || isCalendarDate(value.dueDate))
     && typeof value.completed === 'boolean'
     && isTimestamp(value.createdAt) && isTimestamp(value.updatedAt);
 }
 
-function isTimestamp(value) {
-  return typeof value === 'string' && Number.isFinite(Date.parse(value));
+function isCalendarDate(value) {
+  if (typeof value !== 'string' || !DATE_ONLY.test(value)) return false;
+  const [year, month, day] = value.split('-').map(Number);
+  const parsed = new Date(Date.UTC(year, month - 1, day));
+  return parsed.getUTCFullYear() === year
+    && parsed.getUTCMonth() === month - 1
+    && parsed.getUTCDate() === day;
 }
 
-export function validateTasks(value) {
-  return Array.isArray(value) && value.every(isTask);
+function isTimestamp(value) {
+  return typeof value === 'string'
+    && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2})$/.test(value)
+    && Number.isFinite(Date.parse(value));
 }
 
 export function toggleTask(task, now = () => new Date().toISOString()) {
-  if (!isTask(task)) throw new TypeError('Cannot toggle an invalid task');
+  if (!isTaskRecord(task)) throw new TypeError('Cannot toggle an invalid task');
   return { ...task, completed: !task.completed, updatedAt: now() };
 }

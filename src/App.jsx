@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { createTask } from './features/tasks/taskModel.js';
+import { createTask, toggleTask as toggleTaskRecord } from './features/tasks/taskModel.js';
 import { createTaskStorage } from './features/tasks/taskStorage.js';
 
 const storage = createTaskStorage();
@@ -24,19 +24,14 @@ export default function App() {
     if (!trimmedTitle) return;
 
     const now = new Date().toISOString();
-    let task;
-    try {
-      task = createTask({ title: trimmedTitle }, { id: makeId, now: () => now });
-    } catch {
-      return;
-    }
+    const task = createTask({ title: trimmedTitle }, { id: makeId, now: () => now });
     setTasks((current) => [...current, task]);
     setTitle('');
   }
 
   function toggleTask(id) {
     setTasks((current) => current.map((task) =>
-      task.id === id ? { ...task, completed: !task.completed, updatedAt: new Date().toISOString() } : task,
+      task.id === id ? toggleTaskRecord(task) : task,
     ));
   }
 
@@ -53,7 +48,7 @@ export default function App() {
           <span className="brand-mark" aria-hidden="true">✓</span>
           <span>Task Manager</span>
         </a>
-        <span className="local-badge"><span aria-hidden="true" /> Saved on this device</span>
+        <span className="local-badge"><span aria-hidden="true" /> {storageError ? 'Save issue' : 'Saved on this device'}</span>
       </header>
 
       <main id="main" className="workspace">
