@@ -36,9 +36,17 @@ describe('task model', () => {
     expect(isTaskRecord({ ...valid, dueDate: '2026-02-30' })).toBe(false);
   });
 
+  it('rejects impossible timestamp calendar dates', () => {
+    const valid = createTask({ title: 'Valid timestamp' }, { id: () => 'timestamp-task' });
+    expect(isTaskRecord({ ...valid, updatedAt: '2026-02-28T12:00:00Z' })).toBe(true);
+    expect(isTaskRecord({ ...valid, updatedAt: '2026-02-30T12:00:00Z' })).toBe(false);
+  });
+
   it('requires timestamps in ISO 8601 form', () => {
     const valid = createTask({ title: 'Timestamp' }, { id: () => 'time-task' });
     expect(isTaskRecord({ ...valid, updatedAt: 'October 5 2026' })).toBe(false);
+    expect(isTaskRecord({ ...valid, updatedAt: '2026-02-30T12:00:00Z' })).toBe(false);
+    expect(isTaskRecord({ ...valid, updatedAt: '2026-10-05T25:00:00Z' })).toBe(false);
   });
 
   it('toggles completion and updates the timestamp immutably', () => {
