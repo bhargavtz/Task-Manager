@@ -48,7 +48,11 @@ function isTimestamp(value) {
   const [, year, month, day, hour, minute, second, , zone, offsetHour, offsetMinute] = match;
   if (!isCalendarDate(`${year}-${month}-${day}`)) return false;
   if (Number(hour) > 23 || Number(minute) > 59 || Number(second) > 59) return false;
-  if (zone !== 'Z' && (Number(offsetHour) > 23 || Number(offsetMinute) > 59)) return false;
+  if (zone !== 'Z') {
+    const offsetHours = Number(offsetHour);
+    const offsetMinutes = Number(offsetMinute);
+    if (offsetHours > 14 || offsetMinutes > 59 || (offsetHours === 14 && offsetMinutes !== 0)) return false;
+  }
   return Number.isFinite(Date.parse(value));
 }
 
