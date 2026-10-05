@@ -1,86 +1,144 @@
 # Task Manager
 
-A modern task manager web application built with HTML, CSS, and JavaScript, featuring user-friendly functionalities for task management, a stylish design, and real-time updates.
+A polished, local-first task manager built with **React + Vite**. Add tasks, mark them complete, delete them, and keep them saved in the current browser.
+
+> This project is intentionally client-side. It does not provide accounts, cloud sync, team collaboration, or a backend yet.
+
+## Why this project
+
+Task Manager is a focused portfolio project demonstrating:
+
+- React component-based UI architecture
+- Accessible form and task interactions
+- Safe rendering of user-entered task titles
+- Validated task records and localStorage persistence
+- Unit/component testing with Vitest and React Testing Library
+- Browser test setup with Playwright
+- Responsive, dependency-light visual design
 
 ## Features
 
-### Task Management
-- **Add Tasks**: Create tasks with titles and descriptions.
-- **Edit Tasks**: Update the details of existing tasks.
-- **Mark as Complete/Incomplete**: Toggle tasks between completed and incomplete states.
-- **Delete Tasks**: Remove tasks from the list.
-- **Task Counter**: Displays the total number of tasks and how many are completed.
+- Add a task with a trimmed title
+- Complete and reopen tasks
+- Delete individual tasks
+- Display total and completed task counts
+- Persist valid tasks in browser storage under a versioned key
+- Detect malformed stored records instead of rendering unsafe data
+- Show a visible save-status warning when browser storage is unavailable
+- Responsive layout for desktop and mobile screens
+- Keyboard-friendly controls and accessible labels
+- Reduced-motion support
 
-### Stylish Design
-- **Responsive Layout**: The application is designed to look great on both desktop and mobile devices.
-- **Animated Gradient Header**: The header features a beautiful animated gradient background for a modern look.
-- **Bootstrap and Tailwind CSS**: Utilizes popular CSS frameworks for styling.
-- **Custom Styling**: Includes custom styles for a polished appearance.
+## Tech stack
 
-## Getting Started
+- React 19
+- Vite 7
+- JavaScript (ES modules)
+- CSS with local design tokens
+- Vitest + React Testing Library
+- Playwright for browser-level testing
 
-### Prerequisites
-- Make sure you have a web browser installed (Chrome, Firefox, Edge, etc.).
-- Optionally, you can use a local server (e.g., XAMPP, WAMP, or VS Code Live Server extension) for a better experience.
+## Requirements
 
-### Installation
+- Node.js 20+ recommended
+- npm 10+ recommended
+- A modern browser (Chrome, Edge, Firefox, or Safari)
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/bhargavtz/task-manager.git
-   ```
-2. **Navigate to the project folder:**
-   ```bash
-   cd task-manager
-   ```
-3. **Open the `index.html` file in your preferred web browser:**
-   ```bash
-   start index.html
-   ```
-   Or you can open it manually from the file explorer.
+## Run locally
 
-## Usage
-
-1. **Adding Tasks:**
-   - Use the form to add tasks with titles and descriptions.
-   - Click the "Add Task" button to add it to the list.
-
-2. **Editing Tasks:**
-   - Click the "Edit" button next to a task to modify its title or description.
-
-3. **Marking as Complete/Incomplete:**
-   - Use the "Complete" button to mark a task as completed. Click "Undo" to change it back to incomplete.
-
-4. **Deleting Tasks:**
-   - Click the "Delete" button next to a task to remove it from the list.
-
-5. **Task Counter:**
-   - The task counter shows the total number of tasks and how many are completed.
-
-## Technologies Used
-- **HTML**: For structuring the content.
-- **CSS**: For styling the application, including Bootstrap and Tailwind CSS.
-- **JavaScript**: For dynamic functionalities such as adding, editing, and deleting tasks.
-
-## Screenshots
-![Task Manager Screenshot](https://i.ibb.co/nwkvsGB/Screenshot-199.png)
-> A screenshot showing the main interface of the Task Manager application.
-
-## Animated Gradient Header
-- The header features an animated gradient that transitions smoothly between colors, providing a visually appealing effect.
-
-## Folder Structure
-```
-task-manager/
-├── index.html        # Main HTML file
-├── script.js         # JavaScript file for task functionalities
-├── styles.css        # Custom CSS file for additional styling
-└── README.md         # Documentation
+```bash
+git clone https://github.com/bhargavtz/Task-Manager.git
+cd Task-Manager
+npm ci
+npm run dev
 ```
 
-## Credits
-- Icons and design elements are created using [Bootstrap](https://getbootstrap.com) and [Tailwind CSS](https://tailwindcss.com).
-- User @bhargavtz for the original concept and project structure.
+Open the local URL printed by Vite, usually:
+
+```text
+http://localhost:5173/
+```
+
+## Test and build
+
+Run the unit/component suite:
+
+```bash
+npm test -- --run
+```
+
+Run the production build:
+
+```bash
+npm run build
+```
+
+Run the Playwright browser suite:
+
+```bash
+npx playwright install chromium
+npm run test:e2e
+```
+
+The browser suite requires the matching Playwright browser binary. If browser installation is blocked in your environment, unit tests and the production build can still be run independently.
+
+## Data and privacy
+
+Tasks are stored locally in the browser on the current device. Clearing browser data can remove them. There is currently no server upload, account system, analytics integration, or cross-device synchronization.
+
+The storage key is versioned as `task-manager:v1`. Invalid or malformed stored data is ignored instead of being rendered.
+
+## Project structure
+
+```text
+Task-Manager/
+├── index.html
+├── src/
+│   ├── App.jsx
+│   ├── App.test.jsx
+│   ├── main.jsx
+│   ├── styles.css
+│   └── features/
+│       └── tasks/
+│           ├── taskModel.js
+│           ├── taskModel.test.js
+│           ├── taskStorage.js
+│           └── taskStorage.test.js
+├── tests/
+│   ├── setup.js
+│   └── e2e/
+│       └── tasks.spec.js
+├── package.json
+├── package-lock.json
+├── vite.config.js
+├── vitest.config.js
+├── playwright.config.js
+├── .gitignore
+├── LICENSE
+└── README.md
+```
+
+## Development principles
+
+- Keep the product local-first until a backend requirement is validated.
+- Write a failing test before implementing new behavior.
+- Keep task validation and storage logic separate from UI rendering.
+- Render user input as text; never inject it as raw HTML.
+- Run tests and the production build before committing.
+- Do not commit secrets or generated dependency/build folders.
+
+## Roadmap
+
+Potential next milestones:
+
+1. Edit task titles and descriptions
+2. Priority and due-date controls
+3. All / Active / Completed filters
+4. Search and deterministic sorting
+5. JSON import/export with preview and schema validation
+6. CI test workflow
+7. Optional backend and authentication only after the local-first product is validated
 
 ## License
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE).
